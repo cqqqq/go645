@@ -1,13 +1,13 @@
-# go dlt645-2007
+# go dlt645-2007/1997
 
 
 
 
-<img src="https://img.shields.io/github/stars/zcx1218029121/go645?style=social"/>
+<img src="https://img.shields.io/github/stars/cqqqq/go645?style=social"/>
 
 用go语言实现的dlt645解析
 ```shell
-    go get github.com/zcx1218029121/go645
+    go get github.com/cqqqq/go645
 ```
 
 1. 读请求
@@ -31,4 +31,6 @@ for {
 }
 
 }
+
 ```
+2. protocal_test.go 中可查看更多案例
