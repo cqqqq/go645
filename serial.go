@@ -61,7 +61,7 @@ func (sf *serialPort) close() (err error) {
 	return err
 }
 
-// Close close current connection.
+// Close  current connection.
 func (sf *serialPort) Close() (err error) {
 	sf.mu.Lock()
 	err = sf.close()

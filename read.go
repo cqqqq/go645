@@ -22,6 +22,7 @@ type (
 		bcdValue string
 		rawValue []byte
 		Negative bool
+		ver      ProtoVersion
 	}
 	//WriteData 写数据
 	WriteData struct {
@@ -46,6 +47,11 @@ func (d ReadData) GetDataType() []byte {
 	return d.dataType
 }
 func (d ReadData) GetDataTypeStr() string {
+	//需要翻转
+	//var a = make([]byte, 4)
+	//for i, j := 0, len(d.dataType)-1; i < j; i, j = i+1, j-1 {
+	//	a[i], a[j] = d.dataType[i], d.dataType[j]
+	//}
 	return hex.EncodeToString(d.dataType)
 }
 func (d *ReadData) GetFloat64ValueWithTime() *ReadDataWithTime {
@@ -53,13 +59,6 @@ func (d *ReadData) GetFloat64ValueWithTime() *ReadDataWithTime {
 		_, _ = strconv.Atoi(d.bcdValue[:6])
 	}
 	return nil
-}
-func (d *ReadData) GetIntValue() (int, error) {
-	value, err := strconv.Atoi(d.bcdValue)
-	if err != nil {
-		return 0, err
-	}
-	return value,nil
 }
 func (d *ReadData) GetFloat64Value() float64 {
 	var data float64
@@ -325,35 +324,43 @@ func (d ReadData) Encode(buffer *bytes.Buffer) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func (d ReadData) GetLen() byte {
-	if d.bcdValue == "" {
-		return 4
+	initLen := byte(0)
+	switch d.ver {
+	case Ver2007:
+		initLen = 4
+	case Ver1997:
+		initLen = 2
 	}
-	return 4 + byte(len(Number2bcd(d.bcdValue)))
+	if d.bcdValue == "" {
+		return initLen
+	}
+	return initLen + byte(len(Number2bcd(d.bcdValue)))
 }
 
-//ReadRequest 读数据
-func ReadRequest(address Address, itemCode int32) *Protocol {
+// ReadRequest 读数据
+func ReadRequest(ver ProtoVersion, address Address, itemCode int32) *Protocol {
 	c := NewControl()
-	c.SetState(Read)
-	d := NewReadData(itemCode, "")
+	c.SetState(ver, Read)
+	d := NewReadData(itemCode, "", ver)
 	return NewProtocol(address, d, c)
 
 }
 
-//ReadRequestWithBlock 读数据
-func ReadRequestWithBlock(address Address, data ReadRequestData) *Protocol {
+// ReadRequestWithBlock 读数据
+func ReadRequestWithBlock(ver ProtoVersion, address Address, data ReadRequestData) *Protocol {
 	c := NewControl()
-	c.SetState(Read)
+	c.SetState(ver, Read)
 	return NewProtocol(address, data, c)
 
 }
 
-//ReadResponse 创建读响应
-func ReadResponse(address Address, itemCode int32, control *Control, rawValue string) *Protocol {
+// ReadResponse 创建读响应
+func ReadResponse(ver ProtoVersion, address Address, itemCode int32, control *Control, rawValue string) *Protocol {
 	return &Protocol{
 		Start:      Start,
 		Start2:     Start,
@@ -361,7 +368,7 @@ func ReadResponse(address Address, itemCode int32, control *Control, rawValue st
 		Address:    address,
 		Control:    control,
 		DataLength: 0x04,
-		Data:       NewReadData(itemCode, rawValue),
+		Data:       NewReadData(itemCode, rawValue, ver),
 	}
 
 }
