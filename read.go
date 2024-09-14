@@ -43,15 +43,15 @@ type (
 	}
 )
 
-func (d ReadData) GetDataType() []byte {
+func (d *ReadData) GetDataType() []byte {
 	return d.dataType
 }
-func (d ReadData) GetDataTypeStr() string {
+func (d *ReadData) GetDataTypeStr() string {
 	//需要翻转
-	//var a = make([]byte, 4)
-	//for i, j := 0, len(d.dataType)-1; i < j; i, j = i+1, j-1 {
-	//	a[i], a[j] = d.dataType[i], d.dataType[j]
-	//}
+	var a = make([]byte, 4)
+	for i, j := 0, len(d.dataType)-1; i < j; i, j = i+1, j-1 {
+		a[i], a[j] = d.dataType[i], d.dataType[j]
+	}
 	return hex.EncodeToString(d.dataType)
 }
 func (d *ReadData) GetFloat64ValueWithTime() *ReadDataWithTime {
@@ -62,118 +62,149 @@ func (d *ReadData) GetFloat64ValueWithTime() *ReadDataWithTime {
 }
 func (d *ReadData) GetFloat64Value() float64 {
 	var data float64
-	if d.dataType[3] == 0x00 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
+	if d.ver == Ver2007 {
+		if d.dataType[3] == 0x00 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x01 && d.dataType[0] == 0 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 10
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x02 && d.dataType[0] == 0 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.001
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x03 && d.dataType[0] == 0 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.0001
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x04 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.0001
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x05 && d.dataType[0] == 0 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.0001
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x06 && d.dataType[0] == 0 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.001
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x07 && d.dataType[0] == 0 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x08 && d.dataType[0] == 0 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x09 && d.dataType[0] == 0 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x0A && d.dataType[1] == 0x01 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x0A && d.dataType[1] == 0x02 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x0A && d.dataType[1] == 0x03 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x0B && d.dataType[1] == 0x01 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x0B && d.dataType[1] == 0x02 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x0B && d.dataType[1] == 0x03 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x01 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 1000
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x02 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 100
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x03 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 10000
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x04 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 10000
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x05 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 10000
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x06 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 10000
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x07 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 10
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x08 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 100
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x09 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 100
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x0A {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value)
+		}
+		if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x0B {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) / 10000
+		}
+		if d.Negative {
+			return data * -1
+		}
+	} else {
+		if d.dataType[1] == 0xB6 && (d.dataType[0] >= 0x11 && d.dataType[0] <= 0x13) {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value)
+		}
+		if d.dataType[1] == 0xB6 && (d.dataType[0] >= 0x21 && d.dataType[0] <= 0x23) {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[1] == 0xB6 && d.dataType[0] >= 0x30 && d.dataType[0] <= 0x33 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.0001
+		}
+		if d.dataType[1] == 0xB6 && d.dataType[0] >= 0x40 && d.dataType[0] <= 0x43 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if d.dataType[1] == 0xB6 && d.dataType[0] >= 0x50 && d.dataType[2] <= 0x53 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.001
+		}
+		if d.dataType[1] == 0xB6 && d.dataType[0] >= 0x60 && d.dataType[0] <= 0x64 {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
+		if ((d.dataType[1] >= 0x90 && d.dataType[1] <= 0x99) || d.dataType[1] == 0xe3) && (d.dataType[2] >= 0x10 && d.dataType[2] <= 0x1E) {
+			value, _ := strconv.Atoi(d.bcdValue)
+			data = float64(value) * 0.01
+		}
 	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x01 && d.dataType[0] == 0 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 10
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x02 && d.dataType[0] == 0 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.001
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x03 && d.dataType[0] == 0 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.0001
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x04 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.0001
 
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x05 && d.dataType[0] == 0 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.0001
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x06 && d.dataType[0] == 0 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.001
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x07 && d.dataType[0] == 0 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x08 && d.dataType[0] == 0 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x09 && d.dataType[0] == 0 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x0A && d.dataType[1] == 0x01 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x0A && d.dataType[1] == 0x02 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x0A && d.dataType[1] == 0x03 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x0B && d.dataType[1] == 0x01 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x0B && d.dataType[1] == 0x02 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x0B && d.dataType[1] == 0x03 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) * 0.01
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x01 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 1000
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x02 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 100
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x03 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 10000
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x04 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 10000
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x05 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 10000
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x06 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 10000
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x07 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 10
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x08 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 100
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x09 {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 100
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x0A {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value)
-	}
-	if d.dataType[3] == 0x02 && d.dataType[2] == 0x80 && d.dataType[0] == 0x0B {
-		value, _ := strconv.Atoi(d.bcdValue)
-		data = float64(value) / 10000
-	}
-	if d.Negative {
-		return data * -1
-	}
 	return data
 }
 func (d *ReadData) GetFloat64ValueUnsigned() float64 {

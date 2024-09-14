@@ -39,14 +39,30 @@ func TestRead(t *testing.T) {
 	data := make([]byte, 0)
 	c := NewControl()
 	c.SetState(Ver1997, Read)
-	r := ReadRequest(Ver1997, NewAddress("000000001111", BigEndian), 0xB613)
+	r := ReadRequest(Ver1997, NewAddress("000000001111", LittleEndian), 0xB613)
 	bf := bytes.NewBuffer(data)
 	_ = r.Encode(bf)
 	decodeString, _ := hex.DecodeString(str)
 	p2, _ := Decode(Ver1997, bytes.NewBuffer(decodeString))
 	print(p2.Data.(*ReadData).GetValue() + "\n")
 	print(p2.Data.(*ReadData).GetDataTypeStr() + "\n")
-	//fmt.Printf("%f", p2.Data.(*ReadData).GetFloat64Value())
+	fmt.Printf("%f", p2.Data.(*ReadData).GetFloat64Value())
+}
+
+// TestRead 测试解析读请求
+func TestRead2007(t *testing.T) {
+	str := "68111100000000689106333634353355E316"
+	data := make([]byte, 0)
+	c := NewControl()
+	c.SetState(Ver2007, Read)
+	r := ReadRequest(Ver2007, NewAddress("000000001111", LittleEndian), 0x02_01_03_00)
+	bf := bytes.NewBuffer(data)
+	_ = r.Encode(bf)
+	decodeString, _ := hex.DecodeString(str)
+	p2, _ := Decode(Ver2007, bytes.NewBuffer(decodeString))
+	print(p2.Data.(*ReadData).GetValue() + "\n")
+	print(p2.Data.(*ReadData).GetDataTypeStr() + "\n")
+	fmt.Printf("%f", p2.Data.(*ReadData).GetFloat64Value())
 }
 
 // TestSend 测试发送

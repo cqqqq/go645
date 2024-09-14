@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"log"
 )
 
@@ -44,6 +45,7 @@ func Decode(ver ProtoVersion, buffer *bytes.Buffer) (*Protocol, error) {
 	p.Data, err = Handler(p.Control, buffer, p.DataLength, ver)
 	read(&p.CS)
 	read(&p.End)
+	fmt.Println(p)
 	if err != nil {
 		log.Print(err.Error())
 	}
@@ -133,6 +135,9 @@ func DecodeRead(buffer *bytes.Buffer, size int, ver ProtoVersion) InformationEle
 	dataValue := make([]byte, size-dataTypeLen)
 	read(&dataValue)
 	read(&dataType)
+	fmt.Println("dataType", dataValue)
+	fmt.Println("dataType", dataType)
+
 	for i, j := 0, len(dataType)-1; i < j; i, j = i+1, j-1 {
 		dataType[j], dataType[i] = dataType[i], dataType[j]
 	}
@@ -156,6 +161,7 @@ func DecodeRead(buffer *bytes.Buffer, size int, ver ProtoVersion) InformationEle
 	}
 
 	data.bcdValue = Bcd2Number(dataValue)
+	fmt.Println("data.bcdValue", data.bcdValue)
 	data.dataType = dataType
 	return data
 }
